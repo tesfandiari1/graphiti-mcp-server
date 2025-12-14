@@ -903,6 +903,34 @@ async def initialize_server() -> ServerConfig:
     port = int(os.environ.get('PORT', config.server.port or 8000))
     mcp.settings.port = port
     logger.info(f'Server will listen on port {port}')
+    
+    # Configure transport security for external access (Railway, etc.)
+    # Allow the Railway domain and localhost for development
+    from mcp.server.transport_security import TransportSecuritySettings
+    
+    allowed_hosts = ['localhost', 'localhost:*', '127.0.0.1', '127.0.0.1:*']
+    allowed_origins = ['http://localhost', 'http://localhost:*', 'http://127.0.0.1', 'http://127.0.0.1:*']
+    
+    # Add Railway domain if RAILWAY_PUBLIC_DOMAIN is set, or use a wildcard for .railway.app
+    railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')
+    if railway_domain:
+        allowed_hosts.append(railway_domain)
+        allowed_origins.append(f'https://{railway_domain}')
+    # Also allow any .railway.app domain
+    allowed_hosts.append('*.up.railway.app')
+    allowed_origins.append('https://*.up.railway.app')
+    
+    # Check for custom allowed hosts from environment
+    custom_hosts = os.environ.get('MCP_ALLOWED_HOSTS', '')
+    if custom_hosts:
+        allowed_hosts.extend(custom_hosts.split(','))
+    
+    mcp.settings.transport_security = TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=allowed_hosts,
+        allowed_origins=allowed_origins,
+    )
+    logger.info(f'Transport security configured with allowed hosts: {allowed_hosts}')
 
     # Return MCP configuration for transport
     return config.server

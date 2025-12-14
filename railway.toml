@@ -3,7 +3,6 @@ builder = "dockerfile"
 dockerfilePath = "docker/Dockerfile.standalone"
 
 [deploy]
-healthcheckPath = "/health"
-healthcheckTimeout = 100
+# Disable health check - server handles its own startup
 restartPolicyType = "on_failure"
 

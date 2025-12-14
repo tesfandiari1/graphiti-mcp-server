@@ -2,7 +2,7 @@
 # This configuration is optimized for Railway deployment with Neo4j Aura
 
 server:
-  transport: "http"  # HTTP transport (SSE is deprecated)
+  transport: "http"  # HTTP transport (recommended, use mcp-remote for Claude Desktop)
   host: "0.0.0.0"
   # Note: PORT env var is handled directly in Python code for Railway compatibility
   port: 8000

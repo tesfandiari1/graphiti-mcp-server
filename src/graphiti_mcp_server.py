@@ -932,6 +932,11 @@ async def initialize_server() -> ServerConfig:
     )
     logger.info(f'Transport security configured with allowed hosts: {allowed_hosts}')
 
+    # Enable stateless HTTP mode - required for mcp-remote and Claude Desktop
+    # This allows each request to be independent without session tracking
+    mcp.settings.stateless_http = True
+    logger.info('Stateless HTTP mode enabled for Claude Desktop/mcp-remote compatibility')
+
     # Return MCP configuration for transport
     return config.server
 

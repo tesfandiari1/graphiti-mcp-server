@@ -931,6 +931,10 @@ async def initialize_server() -> ServerConfig:
         allowed_origins=allowed_origins,
     )
     logger.info(f'Transport security configured with allowed hosts: {allowed_hosts}')
+    
+    # Enable stateless HTTP mode for simpler client integration
+    mcp.settings.stateless_http = True
+    logger.info('Stateless HTTP mode enabled')
 
     # Return MCP configuration for transport
     return config.server

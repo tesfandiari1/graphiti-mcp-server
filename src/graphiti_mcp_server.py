@@ -898,8 +898,11 @@ async def initialize_server() -> ServerConfig:
     # Set MCP server settings
     if config.server.host:
         mcp.settings.host = config.server.host
-    if config.server.port:
-        mcp.settings.port = config.server.port
+    
+    # Railway sets PORT env var - prioritize it over config
+    port = int(os.environ.get('PORT', config.server.port or 8000))
+    mcp.settings.port = port
+    logger.info(f'Server will listen on port {port}')
 
     # Return MCP configuration for transport
     return config.server

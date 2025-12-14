@@ -81,7 +81,12 @@ class ServerConfig(BaseModel):
         description='Transport type: http (default, recommended), stdio, or sse (deprecated)',
     )
     host: str = Field(default='0.0.0.0', description='Server host')
-    port: int = Field(default=8000, description='Server port')
+    port: int | str = Field(default=8000, description='Server port')
+
+    def model_post_init(self, __context) -> None:
+        """Ensure port is an integer after loading from config."""
+        if isinstance(self.port, str):
+            self.port = int(self.port) if self.port.isdigit() else 8000
 
 
 class OpenAIProviderConfig(BaseModel):

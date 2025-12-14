@@ -69,12 +69,14 @@ LABEL org.opencontainers.image.title="Graphiti MCP Server (Standalone)" \
       org.opencontainers.image.source="https://github.com/zep-ai/graphiti" \
       graphiti.core.version="${GRAPHITI_CORE_VERSION}"
 
-# Expose MCP server port
+# Expose MCP server port (Railway overrides this with PORT env var)
 EXPOSE 8000
 
-# Health check - verify MCP server is responding
-HEALTHCHECK --interval=10s --timeout=5s --start-period=15s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+# Default config path - can be overridden via CONFIG_PATH env var
+ENV CONFIG_PATH="/app/mcp/config/config-aura.yaml"
 
-# Run the MCP server
-CMD ["uv", "run", "--no-sync", "main.py"]
+# Note: Railway manages health checks externally, so we don't use Docker HEALTHCHECK
+# The /health endpoint is available for Railway's health check system
+
+# Run the MCP server with explicit config
+CMD ["uv", "run", "--no-sync", "main.py", "--config", "/app/mcp/config/config-aura.yaml"]
